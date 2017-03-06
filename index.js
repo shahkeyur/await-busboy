@@ -1,12 +1,19 @@
-var Busboy = require('busboy')
-var chan = require('chan')
-var BlackHoleStream = require('black-hole-stream')
+const Busboy = require('busboy')
+const BlackHoleStream = require('black-hole-stream')
+const Result = require('./result')
 
-var getDescriptor = Object.getOwnPropertyDescriptor
-var isArray = Array.isArray;
+const getDescriptor = Object.getOwnPropertyDescriptor
+const isArray = Array.isArray
 
-module.exports = function (request, options) {
-  var ch = chan()
+module.exports = (request, options) => {
+  const res = new Result()
+
+  // - what used to be a `chan` will now be a thenable
+  // - each time the thenable.then() is called, a Promise is returned. when the
+  // next value is ready, the promise is resolved with it OR if the value is an
+  // error, the promise is rejected and the thenable is marked done.
+  // - if a done thenable is awaited, a Promise resolved with
+  // an empty value is returned.
 
   // koa special sauce
   request = request.req || request
@@ -15,11 +22,11 @@ module.exports = function (request, options) {
   options.headers = request.headers
   // options.checkField hook `function(name, val, fieldnameTruncated, valTruncated)`
   // options.checkFile hook `function(fieldname, fileStream, filename, encoding, mimetype)`
-  var checkField = options.checkField
-  var checkFile = options.checkFile
-  var lastError;
+  const checkField = options.checkField
+  const checkFile = options.checkFile
+  let lastError
 
-  var busboy = new Busboy(options)
+  const busboy = new Busboy(options)
 
   request.on('close', cleanup)
 
@@ -30,22 +37,22 @@ module.exports = function (request, options) {
   .on('error', onEnd)
   .on('finish', onEnd)
 
-  busboy.on('partsLimit', function(){
-    var err = new Error('Reach parts limit')
+  busboy.on('partsLimit', () => {
+    const err = new Error('Reach parts limit')
     err.code = 'Request_parts_limit'
     err.status = 413
     onError(err)
   })
 
-  busboy.on('filesLimit', function(){
-    var err = new Error('Reach files limit')
+  busboy.on('filesLimit', () => {
+    const err = new Error('Reach files limit')
     err.code = 'Request_files_limit'
     err.status = 413
     onError(err)
   })
 
-  busboy.on('fieldsLimit', function(){
-    var err = new Error('Reach fields limit')
+  busboy.on('fieldsLimit', () => {
+    const err = new Error('Reach fields limit')
     err.code = 'Request_fields_limit'
     err.status = 413
     onError(err)
@@ -53,24 +60,22 @@ module.exports = function (request, options) {
 
   request.pipe(busboy)
 
-  // i would just put everything in an array
-  // but people will complain
   if (options.autoFields) {
-    var field = ch.field = {} // object lookup
-    var fields = ch.fields = [] // list lookup
+    var field = res.field = {} // object lookup
+    var fields = res.fields = [] // list lookup
   }
 
-  return ch
+  return res
 
-  function onField(name, val, fieldnameTruncated, valTruncated) {
+  function onField (name, val, fieldnameTruncated, valTruncated) {
     if (checkField) {
-      var err = checkField(name, val, fieldnameTruncated, valTruncated)
+      const err = checkField(name, val, fieldnameTruncated, valTruncated)
       if (err) {
         return onError(err)
       }
     }
 
-    var args = [name, val, fieldnameTruncated, valTruncated]
+    const args = [name, val, fieldnameTruncated, valTruncated]
 
     if (options.autoFields) {
       fields.push(args)
@@ -78,44 +83,52 @@ module.exports = function (request, options) {
       // don't overwrite prototypes
       if (getDescriptor(Object.prototype, name)) return
 
-      var prev = field[name]
-      if (prev == null) return field[name] = val
-      if (isArray(prev)) return prev.push(val)
+      const prev = field[name]
+
+      if (prev == null) {
+        field[name] = val
+        return
+      }
+
+      if (isArray(prev)) {
+        prev.push(val)
+        return
+      }
+
       field[name] = [prev, val]
     } else {
-      ch(args)
+      res.add(args)
     }
   }
 
-  function onFile(fieldname, file, filename, encoding, mimetype) {
+  function onFile (fieldname, file, filename, encoding, mimetype) {
     if (checkFile) {
-      var err = checkFile(fieldname, file, filename, encoding, mimetype)
+      const err = checkFile(fieldname, file, filename, encoding, mimetype)
       if (err) {
         // make sure request stream's data has been read
-        var blackHoleStream = new BlackHoleStream();
-        file.pipe(blackHoleStream);
+        const blackHoleStream = new BlackHoleStream()
+        file.pipe(blackHoleStream)
         return onError(err)
       }
     }
 
-    // opinionated, but 5 arguments is ridiculous
     file.fieldname = fieldname
     file.filename = filename
     file.transferEncoding = file.encoding = encoding
     file.mimeType = file.mime = mimetype
-    ch(file)
+    res.add(file)
   }
 
-  function onError(err) {
-    lastError = err;
+  function onError (err) {
+    lastError = err
   }
 
-  function onEnd() {
+  function onEnd (err) {
     cleanup()
-    ch(lastError)
+    res.close(err || lastError)
   }
 
-  function cleanup() {
+  function cleanup () {
     request.removeListener('close', cleanup)
     busboy.removeListener('field', onField)
     busboy.removeListener('file', onFile)

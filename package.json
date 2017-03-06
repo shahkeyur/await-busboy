@@ -1,38 +1,44 @@
 {
-  "name": "co-busboy",
-  "description": "Busboy multipart parser as a yieldable",
-  "version": "1.3.1",
+  "name": "await-busboy",
+  "description": "An awaitable busboy multipart parser",
+  "version": "1.0.0",
   "author": {
-    "name": "Jonathan Ong",
-    "email": "me@jongleberry.com",
-    "url": "http://jongleberry.com",
-    "twitter": "https://twitter.com/jongleberry"
+    "name": "Aaron Heckmann",
+    "email": "aaron.heckmann@gmail.com",
+    "url": "https://github.com/aheckmann",
+    "twitter": "https://twitter.com/aaronheckmann"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cojs/co-busboy.git"
+    "url": "https://github.com/aheckmann/await-busboy.git"
   },
   "bugs": {
-    "mail": "me@jongleberry.com",
-    "url": "https://github.com/cojs/co-busboy/issues"
+    "url": "https://github.com/aheckmann/await-busboy/issues"
+  },
+  "engines": {
+    "node": ">= 7.6.0"
   },
   "dependencies": {
-    "black-hole-stream": "~0.0.1",
-    "busboy": "^0.2.8",
-    "chan": "^0.6.1"
+    "black-hole-stream": "0.0.1",
+    "busboy": "0.2.13"
   },
   "devDependencies": {
-    "co": "*",
-    "formstream": "~1.0.0",
-    "istanbul": "*",
-    "mocha": "*"
+    "istanbul": "0.4.x",
+    "formstream": "1.0.x",
+    "mocha": "3.1.x",
+    "standard": "^8.5.0"
   },
   "scripts": {
-    "test": "NODE_ENV=test mocha --harmony --reporter spec --bail",
-    "test-cov": "NODE_ENV=test istanbul cover -x test.js _mocha -- --reporter spec --bail"
+    "test": "npm run test-cov && npm run lint",
+    "lint": "NODE_ENV=test node_modules/standard/bin/cmd.js",
+    "lint-fix": "NODE_ENV=test node_modules/standard/bin/cmd.js --fix",
+    "test-cov": "NODE_ENV=test istanbul cover _mocha -- --reporter spec --bail",
+    "open-cov": "open coverage/lcov-report/index.html",
+    "test-only": "NODE_ENV=test mocha --reporter spec --bail"
   },
   "files": [
-    "index.js"
+    "index.js",
+    "result.js"
   ]
 }
