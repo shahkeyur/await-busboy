@@ -194,7 +194,6 @@ If `autoFields: true`, this object will be populated with key/value pairs.
 
 If `autoFields: true`, this array will be populated with all fields.
 
-
 ## Development
 
 ### Running tests
