@@ -9,7 +9,7 @@ var request = require('./request')
 
 var busboy = require('../')
 
-describe('Co Busboy', function () {
+describe('co-busboy', function () {
   it('should work without autofields', function () {
     return co(function* () {
       var parts = busboy(request())
