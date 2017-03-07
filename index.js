@@ -1,3 +1,5 @@
+'use strict'
+
 const Busboy = require('busboy')
 const BlackHoleStream = require('black-hole-stream')
 const Result = require('./result')

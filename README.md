@@ -1,6 +1,6 @@
 #await-busboy
 
-[busboy][] with `async/await` support.
+[busboy][] with `async/await` and [co][] support.
 
 [![NPM version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
@@ -19,6 +19,7 @@
 [download-image]: https://img.shields.io/npm/dm/await-busboy.svg?style=flat-square
 [download-url]: https://npmjs.org/package/await-busboy
 [busboy]: https://github.com/mscdex/busboy
+[co]: https://github.com/tj/co
 
 _forked from https://github.com/cojs/busboy and updated to support async/await_
 
@@ -197,6 +198,8 @@ If `autoFields: true`, this array will be populated with all fields.
 ## Development
 
 ### Running tests
+
+Currently tests only run on Node >= 7.6 but `test/co-busboy-test.js` runs on Node >= 4.
 
 - `npm test` runs tests + code coverage + lint
 - `npm run lint` runs lint only
