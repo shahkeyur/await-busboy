@@ -15,8 +15,8 @@ function hasAsyncSupport () {
 // tests
 
 require('./co-busboy.js')
+require('./result.js')
 
 if (hasAsyncSupport()) {
   require('./async.js')
-  require('./result.js')
 }
