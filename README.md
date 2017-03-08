@@ -1,6 +1,6 @@
 #await-busboy
 
-[busboy][] multipart parser for [co][] and [koa][] with `async/await` support.
+[busboy][] multipart parser with `async/await` and [koa][]/[co][] `yield` support.
 
 [![NPM version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
