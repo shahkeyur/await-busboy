@@ -1,6 +1,6 @@
 #await-busboy
 
-[busboy][] with `async/await` and [co][] support.
+[busboy][] multipart parser for [co][] and [koa][] with `async/await` support.
 
 [![NPM version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
@@ -20,6 +20,7 @@
 [download-url]: https://npmjs.org/package/await-busboy
 [busboy]: https://github.com/mscdex/busboy
 [co]: https://github.com/tj/co
+[koa]: https://github.com/koajs/koa
 
 _forked from https://github.com/cojs/busboy and updated to support async/await_
 
@@ -148,6 +149,40 @@ app.use(async (ctx, next) {
 })
 ```
 
+### co, koa and yield support
+
+This module is backward compatible with [koa][], [co][] and `yield` syntax.
+
+```js
+const Koa = require('koa')
+const app = new Koa()
+const parse = require('await-busboy')
+
+app.use(function* (ctx, next) {
+  // the body isn't multipart, we can't parse it
+  if (!ctx.request.is('multipart/*')) return yield next
+
+  const parts = parse(ctx)
+
+  try {
+    let part
+    while ((part = yield parts)) {
+      if (part.length) {
+        // arrays are await-busboy fields
+        console.log({ key: part[0], value: part[1] })
+      } else {
+        // otherwise, it's a stream
+        part.pipe(someOtherStream)
+      }
+    }
+  } catch (err) {
+    return ctx.throw(err)
+  }
+
+  ctx.body = 'await-busboy is done parsing the form!'
+});
+```
+
 ## API
 
 ### parts = parse(stream, [options])
@@ -197,8 +232,6 @@ If `autoFields: true`, this array will be populated with all fields.
 ## Development
 
 ### Running tests
-
-Currently tests only run on Node >= 7.6 but `test/co-busboy-test.js` runs on Node >= 4.
 
 - `npm test` runs tests + code coverage + lint
 - `npm run lint` runs lint only
