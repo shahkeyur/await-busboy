@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "black-hole-stream": "0.0.1",
-    "busboy": "0.2.13"
+    "busboy": "0.2.14"
   },
   "devDependencies": {
     "co": "4.6.x",
