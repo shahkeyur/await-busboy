@@ -1,4 +1,10 @@
 
+1.0.3 / 2018-01-02
+==================
+
+  * update mocha, standard, busboy, formstream deps
+  * update travis node versions
+
 1.0.2 / 2018-01-02
 ==================
 
