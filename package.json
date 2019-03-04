@@ -21,12 +21,12 @@
   },
   "dependencies": {
     "black-hole-stream": "0.0.1",
-    "busboy": "0.2.14"
+    "busboy": "0.3.0"
   },
   "devDependencies": {
     "co": "4.6.x",
+    "formstream": "^1.1.0",
     "istanbul": "0.4.x",
-    "formstream": "1.0.x",
     "mocha": "3.1.x",
     "standard": "^8.5.0"
   },
