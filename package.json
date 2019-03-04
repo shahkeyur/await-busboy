@@ -27,7 +27,7 @@
     "co": "4.6.x",
     "formstream": "^1.1.0",
     "istanbul": "0.4.x",
-    "mocha": "3.1.x",
+    "mocha": "^6.0.2",
     "standard": "^12.0.1"
   },
   "scripts": {
