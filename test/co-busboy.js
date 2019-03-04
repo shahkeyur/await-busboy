@@ -11,27 +11,27 @@ var busboy = require('../')
 
 describe('co-busboy', function () {
   it('should work without autofields', function () {
-    return co(function* () {
+    return co(function * () {
       var parts = busboy(request())
       var part
       var fields = 0
       var streams = 0
       while ((part = yield parts)) {
         if (part.length) {
-          assert.equal(part.length, 4)
+          assert.strictEqual(part.length, 4)
           fields++
         } else {
           streams++
           part.resume()
         }
       }
-      assert.equal(fields, 6)
-      assert.equal(streams, 3)
+      assert.strictEqual(fields, 6)
+      assert.strictEqual(streams, 3)
     })
   })
 
   it('should work with autofields', function () {
-    return co(function* () {
+    return co(function * () {
       var parts = busboy(request(), {
         autoFields: true
       })
@@ -46,15 +46,15 @@ describe('co-busboy', function () {
           part.resume()
         }
       }
-      assert.equal(fields, 0)
-      assert.equal(streams, 3)
-      assert.equal(parts.fields.length, 6)
-      assert.equal(Object.keys(parts.field).length, 3)
+      assert.strictEqual(fields, 0)
+      assert.strictEqual(streams, 3)
+      assert.strictEqual(parts.fields.length, 6)
+      assert.strictEqual(Object.keys(parts.field).length, 3)
     })
   })
 
   it('should work with autofields and arrays', function () {
-    return co(function* () {
+    return co(function * () {
       var parts = busboy(request(), {
         autoFields: true
       })
@@ -62,14 +62,14 @@ describe('co-busboy', function () {
       while ((part = yield parts)) {
         part.resume()
       }
-      assert.equal(Object.keys(parts.field).length, 3)
-      assert.equal(parts.field['file_name_0'].length, 3)
-      assert.deepEqual(parts.field['file_name_0'], [ 'super alpha file', 'super beta file', 'super gamma file' ])
+      assert.strictEqual(Object.keys(parts.field).length, 3)
+      assert.strictEqual(parts.field['file_name_0'].length, 3)
+      assert.deepStrictEqual(parts.field['file_name_0'], [ 'super alpha file', 'super beta file', 'super gamma file' ])
     })
   })
 
   it('should work with delays', function () {
-    return co(function* () {
+    return co(function * () {
       var parts = busboy(request(), {
         autoFields: true
       })
@@ -80,12 +80,12 @@ describe('co-busboy', function () {
         part.resume()
         yield wait(10)
       }
-      assert.equal(streams, 3)
+      assert.strictEqual(streams, 3)
     })
   })
 
   it('should not overwrite prototypes', function () {
-    return co(function* () {
+    return co(function * () {
       var parts = busboy(request(), {
         autoFields: true
       })
@@ -93,12 +93,12 @@ describe('co-busboy', function () {
       while ((part = yield parts)) {
         if (!part.length) part.resume()
       }
-      assert.equal(parts.field.hasOwnProperty, Object.prototype.hasOwnProperty)
+      assert.strictEqual(parts.field.hasOwnProperty, Object.prototype.hasOwnProperty)
     })
   })
 
   it('should throw error when the files limit is reached', function () {
-    return co(function* () {
+    return co(function * () {
       var parts = busboy(request(), {
         limits: {
           files: 1
@@ -114,14 +114,14 @@ describe('co-busboy', function () {
         error = e
       }
 
-      assert.equal(error.status, 413)
-      assert.equal(error.code, 'Request_files_limit')
-      assert.equal(error.message, 'Reach files limit')
+      assert.strictEqual(error.status, 413)
+      assert.strictEqual(error.code, 'Request_files_limit')
+      assert.strictEqual(error.message, 'Reach files limit')
     })
   })
 
   it('should throw error when the fields limit is reached', function () {
-    return co(function* () {
+    return co(function * () {
       var parts = busboy(request(), {
         limits: {
           fields: 1
@@ -137,14 +137,14 @@ describe('co-busboy', function () {
         error = e
       }
 
-      assert.equal(error.status, 413)
-      assert.equal(error.code, 'Request_fields_limit')
-      assert.equal(error.message, 'Reach fields limit')
+      assert.strictEqual(error.status, 413)
+      assert.strictEqual(error.code, 'Request_fields_limit')
+      assert.strictEqual(error.message, 'Reach fields limit')
     })
   })
 
   it('should throw error when the parts limit is reached', function () {
-    return co(function* () {
+    return co(function * () {
       var parts = busboy(request(), {
         limits: {
           parts: 1
@@ -160,14 +160,14 @@ describe('co-busboy', function () {
         error = e
       }
 
-      assert.equal(error.status, 413)
-      assert.equal(error.code, 'Request_parts_limit')
-      assert.equal(error.message, 'Reach parts limit')
+      assert.strictEqual(error.status, 413)
+      assert.strictEqual(error.code, 'Request_parts_limit')
+      assert.strictEqual(error.message, 'Reach parts limit')
     })
   })
 
   it('should use options.checkField do csrf check', function () {
-    return co(function* () {
+    return co(function * () {
       var parts = busboy(request(), {
         checkField: function (name, value) {
           if (name === '_csrf' && value !== 'pass') {
@@ -179,20 +179,20 @@ describe('co-busboy', function () {
       try {
         while ((part = yield parts)) {
           if (part.length) {
-            assert.equal(part.length, 4)
+            assert.strictEqual(part.length, 4)
           } else {
             part.resume()
           }
         }
         throw new Error('should not run this')
       } catch (err) {
-        assert.equal(err.message, 'invalid csrf token')
+        assert.strictEqual(err.message, 'invalid csrf token')
       }
     })
   })
 
   it('should use options.checkFile do filename extension check', function () {
-    return co(function* () {
+    return co(function * () {
       var parts = busboy(request(), {
         checkFile: function (fieldname, filestream, filename) {
           if (path.extname(filename) !== '.dat') {
@@ -204,14 +204,14 @@ describe('co-busboy', function () {
       try {
         while ((part = yield parts)) {
           if (part.length) {
-            assert.equal(part.length, 4)
+            assert.strictEqual(part.length, 4)
           } else {
             part.resume()
           }
         }
         throw new Error('should not run this')
       } catch (err) {
-        assert.equal(err.message, 'invalid filename extension')
+        assert.strictEqual(err.message, 'invalid filename extension')
       }
     })
   })
@@ -219,7 +219,7 @@ describe('co-busboy', function () {
   describe('checkFile()', function () {
     var logfile = path.join(__dirname, 'test.log')
     before(function () {
-      fs.writeFileSync(logfile, new Buffer(1024 * 1024 * 10))
+      fs.writeFileSync(logfile, Buffer.alloc(1024 * 1024 * 10))
     })
 
     after(function () {
@@ -235,7 +235,7 @@ describe('co-busboy', function () {
       form.headers = form.headers()
       form.headers['content-type'] = form.headers['Content-Type']
 
-      return co(function* () {
+      return co(function * () {
         var parts = busboy(form, {
           checkFile: function (fieldname, fileStream, filename) {
             var extname = filename && path.extname(filename)
@@ -270,10 +270,10 @@ describe('co-busboy', function () {
           }
         }
 
-        assert.equal(fileCount, 0)
-        assert.equal(fieldCount, 4)
+        assert.strictEqual(fileCount, 0)
+        assert.strictEqual(fieldCount, 4)
         assert(err)
-        assert.equal(err.message, 'Invalid filename extension: .log')
+        assert.strictEqual(err.message, 'Invalid filename extension: .log')
       })
     })
 
@@ -286,7 +286,7 @@ describe('co-busboy', function () {
       form.headers = form.headers()
       form.headers['content-type'] = form.headers['Content-Type']
 
-      return co(function* () {
+      return co(function * () {
         var parts = busboy(form, {
           checkFile: function (fieldname, fileStream, filename) {
             var extname = filename && path.extname(filename)
@@ -321,8 +321,8 @@ describe('co-busboy', function () {
           }
         }
 
-        assert.equal(fileCount, 1)
-        assert.equal(fieldCount, 4)
+        assert.strictEqual(fileCount, 1)
+        assert.strictEqual(fieldCount, 4)
         assert(!err)
       })
     })

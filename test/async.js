@@ -20,7 +20,7 @@ describe('await-busboy', () => {
 
     while ((part = await parts)) { // eslint-disable-line no-unmodified-loop-condition
       if (part.length) {
-        assert.equal(part.length, 4)
+        assert.strictEqual(part.length, 4)
         fields++
       } else {
         streams++
@@ -28,8 +28,8 @@ describe('await-busboy', () => {
       }
     }
 
-    assert.equal(fields, 6)
-    assert.equal(streams, 3)
+    assert.strictEqual(fields, 6)
+    assert.strictEqual(streams, 3)
   })
 
   it('should work with autoFields', async () => {
@@ -50,10 +50,10 @@ describe('await-busboy', () => {
       }
     }
 
-    assert.equal(fields, 0)
-    assert.equal(streams, 3)
-    assert.equal(parts.fields.length, 6)
-    assert.equal(Object.keys(parts.field).length, 3)
+    assert.strictEqual(fields, 0)
+    assert.strictEqual(streams, 3)
+    assert.strictEqual(parts.fields.length, 6)
+    assert.strictEqual(Object.keys(parts.field).length, 3)
   })
 
   it('should work with autofields and arrays', async () => {
@@ -66,9 +66,9 @@ describe('await-busboy', () => {
       part.resume()
     }
 
-    assert.equal(Object.keys(parts.field).length, 3)
-    assert.equal(parts.field['file_name_0'].length, 3)
-    assert.deepEqual(parts.field['file_name_0'], [ 'super alpha file', 'super beta file', 'super gamma file' ])
+    assert.strictEqual(Object.keys(parts.field).length, 3)
+    assert.strictEqual(parts.field['file_name_0'].length, 3)
+    assert.deepStrictEqual(parts.field['file_name_0'], [ 'super alpha file', 'super beta file', 'super gamma file' ])
   })
 
   it('should work with delays', async () => {
@@ -85,7 +85,7 @@ describe('await-busboy', () => {
       await delay(10)
     }
 
-    assert.equal(streams, 3)
+    assert.strictEqual(streams, 3)
   })
 
   it('should not overwrite prototypes', async () => {
@@ -98,7 +98,7 @@ describe('await-busboy', () => {
       if (!part.length) part.resume()
     }
 
-    assert.equal(parts.field.hasOwnProperty, Object.prototype.hasOwnProperty)
+    assert.strictEqual(parts.field.hasOwnProperty, Object.prototype.hasOwnProperty)
   })
 
   it('should throw error when the files limit is reached', async () => {
@@ -118,9 +118,9 @@ describe('await-busboy', () => {
       error = e
     }
 
-    assert.equal(error.status, 413)
-    assert.equal(error.code, 'Request_files_limit')
-    assert.equal(error.message, 'Reach files limit')
+    assert.strictEqual(error.status, 413)
+    assert.strictEqual(error.code, 'Request_files_limit')
+    assert.strictEqual(error.message, 'Reach files limit')
   })
 
   it('should throw error when the fields limit is reached', async () => {
@@ -141,9 +141,9 @@ describe('await-busboy', () => {
       error = e
     }
 
-    assert.equal(error.status, 413)
-    assert.equal(error.code, 'Request_fields_limit')
-    assert.equal(error.message, 'Reach fields limit')
+    assert.strictEqual(error.status, 413)
+    assert.strictEqual(error.code, 'Request_fields_limit')
+    assert.strictEqual(error.message, 'Reach fields limit')
   })
 
   it('should throw error when the parts limit is reached', async () => {
@@ -164,9 +164,9 @@ describe('await-busboy', () => {
       error = e
     }
 
-    assert.equal(error.status, 413)
-    assert.equal(error.code, 'Request_parts_limit')
-    assert.equal(error.message, 'Reach parts limit')
+    assert.strictEqual(error.status, 413)
+    assert.strictEqual(error.code, 'Request_parts_limit')
+    assert.strictEqual(error.message, 'Reach parts limit')
   })
 
   it('should use options.checkField do csrf check', async () => {
@@ -183,14 +183,14 @@ describe('await-busboy', () => {
     try {
       while ((part = await parts)) { // eslint-disable-line no-unmodified-loop-condition
         if (part.length) {
-          assert.equal(part.length, 4)
+          assert.strictEqual(part.length, 4)
         } else {
           part.resume()
         }
       }
       throw new Error('should not run this')
     } catch (err) {
-      assert.equal(err.message, 'invalid csrf token')
+      assert.strictEqual(err.message, 'invalid csrf token')
     }
   })
 
@@ -208,14 +208,14 @@ describe('await-busboy', () => {
     try {
       while ((part = await parts)) { // eslint-disable-line no-unmodified-loop-condition
         if (part.length) {
-          assert.equal(part.length, 4)
+          assert.strictEqual(part.length, 4)
         } else {
           part.resume()
         }
       }
       throw new Error('should not run this')
     } catch (err) {
-      assert.equal(err.message, 'invalid filename extension')
+      assert.strictEqual(err.message, 'invalid filename extension')
     }
   })
 
@@ -223,7 +223,7 @@ describe('await-busboy', () => {
     const logfile = path.join(__dirname, 'test.log')
 
     before(() => {
-      fs.writeFileSync(logfile, new Buffer(1024 * 1024 * 10))
+      fs.writeFileSync(logfile, Buffer.alloc(1024 * 1024 * 10))
     })
 
     after(() => {
@@ -273,10 +273,10 @@ describe('await-busboy', () => {
         }
       }
 
-      assert.equal(fileCount, 0)
-      assert.equal(fieldCount, 4)
+      assert.strictEqual(fileCount, 0)
+      assert.strictEqual(fieldCount, 4)
       assert(err)
-      assert.equal(err.message, 'Invalid filename extension: .log')
+      assert.strictEqual(err.message, 'Invalid filename extension: .log')
     })
 
     it('should checkFile pass', async () => {
@@ -323,8 +323,8 @@ describe('await-busboy', () => {
         }
       }
 
-      assert.equal(fileCount, 1)
-      assert.equal(fieldCount, 4)
+      assert.strictEqual(fileCount, 1)
+      assert.strictEqual(fieldCount, 4)
       assert(!err)
     })
   })

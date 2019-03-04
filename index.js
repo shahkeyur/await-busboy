@@ -33,11 +33,11 @@ module.exports = (request, options) => {
   request.on('close', cleanup)
 
   busboy
-  .on('field', onField)
-  .on('file', onFile)
-  .on('close', cleanup)
-  .on('error', onEnd)
-  .on('finish', onEnd)
+    .on('field', onField)
+    .on('file', onFile)
+    .on('close', cleanup)
+    .on('error', onEnd)
+    .on('finish', onEnd)
 
   busboy.on('partsLimit', () => {
     const err = new Error('Reach parts limit')
