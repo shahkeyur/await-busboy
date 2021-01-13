@@ -61,7 +61,8 @@ module.exports = (request, options) => {
   })
 
   request.pipe(busboy)
-
+  busboy.end(request.rawBody)
+  
   if (options.autoFields) {
     var field = res.field = {} // object lookup
     var fields = res.fields = [] // list lookup
